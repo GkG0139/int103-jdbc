@@ -4,11 +4,17 @@ import java.sql.*;
 
 public class MySQLDatabase {
 
-  private Connection connection;
+  private static Connection connection;
 
   public MySQLDatabase(String url, String user, String password)
     throws SQLException {
-    connection = DriverManager.getConnection(url, user, password);
+    if (connection == null) {
+      connection = DriverManager.getConnection(url, user, password);
+    }
+  }
+
+  public static Connection getConnection() {
+    return connection;
   }
 
   public ResultSet executeQuery(String query) throws SQLException {
