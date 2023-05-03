@@ -31,6 +31,10 @@ public class MySQLDatabase {
     return instance;
   }
 
+  public Connection getConnection() {
+    return connection;
+  }
+
   public ResultSet executeQuery(String query) throws SQLException {
     Statement statement = connection.createStatement();
     ResultSet resultSet = statement.executeQuery(query);
