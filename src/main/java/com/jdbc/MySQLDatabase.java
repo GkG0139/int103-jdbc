@@ -1,20 +1,34 @@
 package com.jdbc;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.*;
 
 public class MySQLDatabase {
 
-  private static Connection connection;
+  private static MySQLDatabase instance = null;
 
-  public MySQLDatabase(String url, String user, String password)
+  private Connection connection;
+
+  private MySQLDatabase(String url, String username, String password)
     throws SQLException {
-    if (connection == null) {
-      connection = DriverManager.getConnection(url, user, password);
-    }
+    connection = DriverManager.getConnection(url, username, password);
   }
 
-  public static Connection getConnection() {
-    return connection;
+  public static MySQLDatabase getInstance() throws SQLException {
+    if (instance == null) {
+      try {
+        Dotenv dotenv = Dotenv.load();
+        String dbName = dotenv.get("DB_NAME");
+        String dbUser = dotenv.get("DB_USER");
+        String dbPassword = dotenv.get("DB_PASSWORD");
+
+        String url = "jdbc:mysql://localhost:3306/" + dbName;
+        instance = new MySQLDatabase(url, dbUser, dbPassword);
+      } catch (Exception e) {
+        throw new SQLException("Error: " + e.getMessage());
+      }
+    }
+    return instance;
   }
 
   public ResultSet executeQuery(String query) throws SQLException {
